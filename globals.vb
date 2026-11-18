@@ -1,7 +1,7 @@
 ﻿Imports Inventor
 
 'veel toegepasde functies
-Public Module FlensGlobals
+Public Module SealGlobals
     Public ThisApp As Inventor.Application
     Public LogInfo As Action(Of String)
     Public LogError As Action(Of String)
