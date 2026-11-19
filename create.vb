@@ -32,7 +32,11 @@ Public Module SealCreate
         Dim occurrences As ComponentOccurrences = task.Asm.ComponentDefinition.Occurrences
         For index As Integer = 1 To occurrences.Count
             Dim occ As ComponentOccurrence = occurrences.Item(index)
-            If occ.Name = task.PartName OrElse occ.Name.StartsWith(task.PartName & ":") Then
+            ' After Replace, Inventor renames the occurrence to the generated
+            ' file name (e.g. SealIn_81x93_80:1), so accept that prefix too.
+            If occ.Name = task.PartName OrElse
+               occ.Name.StartsWith(task.PartName & ":") OrElse
+               occ.Name.StartsWith(task.PartName & "_") Then
                 task.Occurrence = occ
                 task.OccurrenceName = occ.Name
                 Return True
