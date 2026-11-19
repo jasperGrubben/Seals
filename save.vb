@@ -32,7 +32,8 @@ Public Module SealSave
             Return
         End If
 
-        asm.SaveAs(targetPath, False)
+        ' Save a separate copy; False changes the source assembly's identity/path.
+        asm.SaveAs(targetPath, True)
 
         Dim copiedAsm As AssemblyDocument = Nothing
         Try
