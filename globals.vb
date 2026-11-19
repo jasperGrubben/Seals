@@ -14,12 +14,4 @@ Public Module SealGlobals
     Public Sub Show(message As String)
         System.Windows.Forms.MessageBox.Show(message)
     End Sub
-
-    Public Sub MaterialLibrary()
-        Public "Perbunan-NBR-grey white" as String 
-        "Sillicone-Si-beige" as String
-        "Sillicone-Si-blue" as String
-        "Keltan-EPDM-black"as String
-        "Vilton-FKM-red" as String
-    End Sub
 End Module
