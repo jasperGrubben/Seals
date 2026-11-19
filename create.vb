@@ -66,10 +66,11 @@ Public Module SealCreate
         End Try
     End Sub
 
+    'pipe diameter == name DN catalog
     Private Sub SetParametersIn(partDoc As PartDocument, task As SealTask)
         Dim parameters As Parameters = partDoc.ComponentDefinition.Parameters
-        SetMm(parameters, New ParameterValue("MaatA", task.Model.MaatA))
-        SetMm(parameters, New ParameterValue("MaatB", task.Model.MaatB))
+        SetMm(parameters, New ParameterValue("BinnenDiaMeter", task.Model.MaatA))
+        SetMm(parameters, New ParameterValue("BuitenDiaMeter", task.Model.MaatB))
         SetMm(parameters, New ParameterValue("PipeDiaMeter", task.Model.PipeDiameter))
     End Sub
 
