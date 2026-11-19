@@ -27,7 +27,11 @@ Public Module SealCreate
     End Function
 
     Private Function FindOccurrence(task As SealTask) As Boolean
-        For Each occ As ComponentOccurrence In task.Asm.ComponentDefinition.Occurrences
+        ' Avoid For Each here: Inventor's COM collection enumerator can fail
+        ' with E_FAIL, especially after an occurrence has been replaced.
+        Dim occurrences As ComponentOccurrences = task.Asm.ComponentDefinition.Occurrences
+        For index As Integer = 1 To occurrences.Count
+            Dim occ As ComponentOccurrence = occurrences.Item(index)
             If occ.Name = task.PartName OrElse occ.Name.StartsWith(task.PartName & ":") Then
                 task.Occurrence = occ
                 task.OccurrenceName = occ.Name
