@@ -8,7 +8,7 @@ Public Module SealCreate
         End If
 
         task.OutputPath = System.IO.Path.Combine(task.OutputFolder,
-            task.PartName & "_" & NumberHelper.SealKey(task.Model) & ".ipt")
+            task.PartName & "_" & NumberHelper.SealKey(task.Model, task.Material) & ".ipt")
 
         If Not FindOccurrence(task) Then
             SealGlobals.Show("Occurrence not found: " & task.PartName)
@@ -27,13 +27,9 @@ Public Module SealCreate
     End Function
 
     Private Function FindOccurrence(task As SealTask) As Boolean
-        ' Avoid For Each here: Inventor's COM collection enumerator can fail
-        ' with E_FAIL, especially after an occurrence has been replaced.
         Dim occurrences As ComponentOccurrences = task.Asm.ComponentDefinition.Occurrences
         For index As Integer = 1 To occurrences.Count
             Dim occ As ComponentOccurrence = occurrences.Item(index)
-            ' After Replace, Inventor renames the occurrence to the generated
-            ' file name (e.g. SealIn_81x93_80:1), so accept that prefix too.
             If occ.Name = task.PartName OrElse
                occ.Name.StartsWith(task.PartName & ":") OrElse
                occ.Name.StartsWith(task.PartName & "_") Then
@@ -74,11 +70,15 @@ Public Module SealCreate
         End Try
     End Sub
 
-    'pipe diameter == name DN catalog
     Private Sub SetParametersIn(partDoc As PartDocument, task As SealTask)
         Dim parameters As Parameters = partDoc.ComponentDefinition.Parameters
         SetMm(parameters, New ParameterValue("BinnenDiaMeter", task.Model.MaatA))
         SetMm(parameters, New ParameterValue("BuitenDiaMeter", task.Model.MaatB))
+
+        ' Klemband generation is deferred: only SealIn receives the new Thickness parameter.
+        If task.PartName = "SealIn" Then
+            SetMm(parameters, New ParameterValue("Thickness", task.Model.SealThickness))
+        End If
     End Sub
 
     Private Sub SetMm(partParams As Parameters, pv As ParameterValue)
