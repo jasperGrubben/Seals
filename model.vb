@@ -4,10 +4,17 @@ Public Class Input
     Public Property MaatA As Double
     Public Property MaatB As Double
     Public Property PipeDiameter As Double
+    Public Property Thickness As Double
+
+    Public ReadOnly Property SealThickness As Double
+        Get
+            Return 4.0 + Thickness
+        End Get
+    End Property
 
     Public ReadOnly Property IsValid As Boolean
         Get
-            Return MaatA > 0 AndAlso MaatB > 0 AndAlso PipeDiameter > 0
+            Return MaatA > 0 AndAlso MaatB > 0 AndAlso PipeDiameter > 0 AndAlso Thickness >= 0
         End Get
     End Property
 End Class
@@ -46,7 +53,8 @@ Public Module NumberHelper
         Return value.ToString(System.Globalization.CultureInfo.CurrentCulture) & " mm"
     End Function
 
-    Public Function SealKey(model As Input) As String
-        Return FileNumber(model.MaatA) & "x" & FileNumber(model.MaatB) & "_" & FileNumber(model.PipeDiameter)
+    Public Function SealKey(model As Input, material As String) As String
+        Return FileNumber(model.PipeDiameter) & "x" &
+               FileNumber(model.SealThickness) & "x" & material
     End Function
 End Module

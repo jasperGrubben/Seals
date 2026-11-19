@@ -1,17 +1,17 @@
 ﻿Public Class SealPaths
 
     Public ReadOnly InnerRing As String = "C:\Users\Gasteng5\Documents\ilogic2027\Seals\Parts\SealIn.ipt"
-    Public ReadOnly OuterRing As String = "C:\Users\Gasteng5\Documents\ilogic2027\Seals\Parts\SealOut.ipt"
+    Public ReadOnly OuterRing As String = "C:\Users\Gasteng5\Documents\ilogic2027\Seals\Parts\Klemband.ipt"
     Public ReadOnly TemplateIAM As String = "C:\Users\Gasteng5\Documents\ilogic2027\Seals\Parts\Seals.iam"
     Public ReadOnly OutputDir As String = "C:\Users\Gasteng5\Documents\ilogic2027\Seals\Outputs\een"
 
-    Public ReadOnly PartNames() As String = {"SealIn", "SealOut"}
+    Public ReadOnly PartNames() As String = {"SealIn", "Klemband"}
 
     Public Function TemplateFor(partName As String) As String
         Select Case partName
             Case "SealIn"
                 Return InnerRing
-            Case "SealOut"
+            Case "Klemband"
                 Return OuterRing
             Case Else
                 Return Nothing
@@ -24,7 +24,7 @@
             Return False
         End If
         If Not System.IO.File.Exists(OuterRing) Then
-            SealGlobals.Show("Outer ring template is missing: " & OuterRing)
+            SealGlobals.Show("Klemband template is missing: " & OuterRing)
             Return False
         End If
         If Not System.IO.File.Exists(TemplateIAM) Then

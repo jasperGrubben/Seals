@@ -23,6 +23,9 @@ Sub Main()
         "Perbunan-NBR-grey white", "Sillicone-Si-beige",
         "Sillicone-Si-blue", "Keltan-EPDM-black", "Vilton-FKM-red"}
 
+    ' Thickness variants documented for 1 mm and 2 mm pipework and 10 mm lip systems.
+    Dim thicknesses() As Double = {1.0, 1.5, 2.0, 3.0}
+
     ' Seals(i, 0) = MaatA, Seals(i, 1) = MaatB, Seals(i, 2) = PipeDiaMeter
     Dim seals(18, 2) As Integer
     seals(0, 0) = 81  : seals(0, 1) = 93  : seals(0, 2) = 80
@@ -46,30 +49,33 @@ Sub Main()
     seals(18, 0) = 632 : seals(18, 1) = 648 : seals(18, 2) = 630
 
     For Each material As String In materials
-        Dim outputFolder As String = System.IO.Path.Combine(paths.OutputDir, material)
-        If Not System.IO.Directory.Exists(outputFolder) Then
-            System.IO.Directory.CreateDirectory(outputFolder)
-        End If
-
         For i As Integer = 0 To seals.GetUpperBound(0)
-            Dim model As New Input With {
-                .MaatA = seals(i, 0),
-                .MaatB = seals(i, 1),
-                .PipeDiameter = seals(i, 2)
-            }
-            If Not model.IsValid Then
-                SealGlobals.LogError("Invalid seal dimensions in row " & i & ".")
-                Continue For
-            End If
+            For Each thickness As Double In thicknesses
+                Dim model As New Input With {
+                    .MaatA = seals(i, 0),
+                    .MaatB = seals(i, 1),
+                    .PipeDiameter = seals(i, 2),
+                    .Thickness = thickness
+                }
+                If Not model.IsValid Then
+                    SealGlobals.LogError("Invalid seal dimensions in row " & i & ".")
+                    Continue For
+                End If
 
-            For Each partName As String In paths.PartNames
-                Dim task As SealTask = CreateTask(assemblyDoc, model, outputFolder,
-                                                  material, partName, paths.TemplateFor(partName))
-                If Not SealCreate.ProcessTask(task) Then Continue For
-                ReplaceComponent(task)
+                Dim outputFolder As String = System.IO.Path.Combine(paths.OutputDir, model.SealThickness.ToString(System.Globalization.CultureInfo.InvariantCulture), material)
+                If Not System.IO.Directory.Exists(outputFolder) Then
+                    System.IO.Directory.CreateDirectory(outputFolder)
+                End If
+
+                For Each partName As String In paths.PartNames
+                    Dim task As SealTask = CreateTask(assemblyDoc, model, outputFolder,
+                                                      material, partName, paths.TemplateFor(partName))
+                    If Not SealCreate.ProcessTask(task) Then Continue For
+                    ReplaceComponent(task)
+                Next
+
+                SealSave.SaveAssemblyCopy(assemblyDoc, outputFolder, model)
             Next
-
-            SealSave.SaveAssemblyCopy(assemblyDoc, outputFolder, model)
         Next
     Next
 

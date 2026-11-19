@@ -11,8 +11,9 @@ Public Module SealSave
             System.IO.Directory.CreateDirectory(outputFolder)
         End If
 
+        Dim material As String = System.IO.Path.GetFileName(outputFolder.Substring(0, outputFolder.LastIndexOf(System.IO.Path.DirectorySeparatorChar)))
         Dim targetPath As String = System.IO.Path.Combine(outputFolder,
-            "Seals_" & NumberHelper.SealKey(model) & ".iam")
+            "Seals_" & NumberHelper.SealKey(model, material) & ".iam")
 
         If System.IO.File.Exists(targetPath) Then
             Dim existingAsm As AssemblyDocument = Nothing
@@ -22,8 +23,8 @@ Public Module SealSave
                 existingAsm.Update()
                 existingAsm.Save()
                 SealGlobals.LogInfo("Used existing assembly copy: " & targetPath)
-            Catch ex As Exception When ex.HResult = &H80004005
-                SealGlobals.LogInfo("Inventor save failed with E_FAIL; skipping save to avoid corrupt state.")
+            Catch ex As Exception When ex.HResult = &H80004007
+                SealGlobals.LogInfo("Inventor save failed; skipping save to avoid corrupt state.")
             Finally
                 If existingAsm IsNot Nothing Then
                     existingAsm.Close(True)
@@ -32,7 +33,6 @@ Public Module SealSave
             Return
         End If
 
-        ' Save a separate copy; False changes the source assembly's identity/path.
         asm.SaveAs(targetPath, True)
 
         Dim copiedAsm As AssemblyDocument = Nothing
@@ -54,6 +54,7 @@ Public Module SealSave
         SetParameter(asmDoc, "MaatA", model.MaatA)
         SetParameter(asmDoc, "MaatB", model.MaatB)
         SetParameter(asmDoc, "PipeDiaMeter", model.PipeDiameter)
+        SetParameter(asmDoc, "Thickness", model.SealThickness)
     End Sub
 
     Private Sub SetParameter(asmDoc As AssemblyDocument, parameterName As String, value As Double)
