@@ -71,7 +71,6 @@ Public Module SealCreate
         Dim parameters As Parameters = partDoc.ComponentDefinition.Parameters
         SetMm(parameters, New ParameterValue("BinnenDiaMeter", task.Model.MaatA))
         SetMm(parameters, New ParameterValue("BuitenDiaMeter", task.Model.MaatB))
-        SetMm(parameters, New ParameterValue("PipeDiaMeter", task.Model.PipeDiameter))
     End Sub
 
     Private Sub SetMm(partParams As Parameters, pv As ParameterValue)
